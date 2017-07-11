@@ -54,15 +54,10 @@
 #define MCU_GPIO_IN_EVENT_TOTAL     8
 
 /** \brief Dio Type */
-typedef struct
-{
-   uint8_t port;
-   uint8_t pin;
-}portPin_type;
+
 
 typedef struct
 {
-   portPin_type p;
    portPin_type gpio;
    uint16_t modefunc;
 }p_gpio_type;
@@ -78,16 +73,16 @@ typedef struct
 
 static const p_gpio_type p_gpio[] =
 {
-   {{2,0},   {5,0},   FUNC4},
-   {{2,1},   {5,1},   FUNC3},
-   {{2,2},   {5,2},   FUNC4},
-   {{2,10},  {0,14},  FUNC0},
-   {{2,11},  {1,11},  FUNC0},
-   {{2,12},  {1,12},  FUNC0},
-   {{1,0},   {0,4},   FUNC0},
-   {{1,1},   {0,8},   FUNC0},
-   {{1,2},   {0,9},   FUNC0},
-   {{1,6},   {1,9},   FUNC0},
+   {  {5,0},   FUNC4},
+   {  {5,1},   FUNC3},
+   {  {5,2},   FUNC4},
+   {  {0,14},  FUNC0},
+   {  {1,11},  FUNC0},
+   {  {1,12},  FUNC0},
+   {  {0,4},   FUNC0},
+   {  {0,8},   FUNC0},
+   {  {0,9},   FUNC0},
+   {  {1,9},   FUNC0},
 };
 
 static eventsInputs_type eventsInputs[MCU_GPIO_IN_EVENT_TOTAL];
@@ -131,15 +126,15 @@ extern void mcu_gpio_setDirection(mcu_gpio_pinId_enum id,
 {
    if(dir == MCU_GPIO_DIRECTION_INPUT)
    {
-	   Chip_SCU_PinMux(p_gpio[id].p.port,
-	                   p_gpio[id].p.pin,
+	   Chip_SCU_PinMux(portPin[id].port,
+	                   portPin[id].pin,
 	                   MD_EZI,
 	                   p_gpio[id].modefunc);
    }
    else
    {
-	   Chip_SCU_PinMux(p_gpio[id].p.port,
-	                   p_gpio[id].p.pin,
+	   Chip_SCU_PinMux(portPin[id].port,
+	                   portPin[id].pin,
 	                   MD_PLN | MD_EZI,
 	                   p_gpio[id].modefunc);
    }
