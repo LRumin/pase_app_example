@@ -31,7 +31,9 @@
  *
  */
 
-/** \brief source para MCU
+#ifndef MCU_PWM_H
+#define MCU_PWM_H
+/** \brief Header para MCU
  **
  ** archivo de inicilización del microcontrolador
  **
@@ -39,31 +41,45 @@
 
 /** \addtogroup PASE_APP_EXAMPLE
  ** @{ */
-/** \addtogroup MCU
+/** \addtogroup MCU PWM
  ** @{ */
-
 /*==================[inclusions]=============================================*/
-#include "mcu.h"
+#include "stdbool.h"
+#include "stdint.h"
 
-/*==================[macros and definitions]=================================*/
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*==================[internal data declaration]==============================*/
+/*==================[macros]=================================================*/
+/*==================[typedef]================================================*/
 
-/*==================[internal functions declaration]=========================*/
-
-/*==================[internal data definition]===============================*/
-
-/*==================[external data definition]===============================*/
-
-/*==================[internal functions definition]==========================*/
-
-/*==================[external functions definition]==========================*/
-extern void mcu_init(void)
+typedef enum
 {
-   mcu_gpio_init();
-   mcu_pwm_init();
-}
+   MCU_PWM_CHANNEL0 = 0,
+   MCU_PWM_CHANNEL1,
+   MCU_PWM_CHANNEL2,
+   MCU_PWM_CHANNEL3,
+   MCU_PWM_CHANNEL4,
+   MCU_PWM_CHANNEL5,
 
+}mcu_pwm_channel;
+
+/*==================[external data declaration]==============================*/
+
+/*==================[external functions declaration]=========================*/
+extern void mcu_pwm_init(void);
+extern void mcu_pwm_config(mcu_pwm_channel, uint32_t);
+extern void mcu_pwm_setDutyCilce(uint32_t);
+
+
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+}
+#endif
 /** @} doxygen end group definition */
 /** @} doxygen end group definition */
 /*==================[end of file]============================================*/
+#endif /* #ifndef MCU_PWM_H */
+
