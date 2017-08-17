@@ -61,7 +61,7 @@
 extern void mcu_init(void)
 {
    mcu_gpio_init();
-   mcu_pwm_init();
+
 }
 
 /** @} doxygen end group definition */

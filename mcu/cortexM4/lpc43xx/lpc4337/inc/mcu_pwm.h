@@ -47,31 +47,31 @@
 #include "stdbool.h"
 #include "stdint.h"
 
+
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*==================[macros]=================================================*/
+#define mcu_startpwm	Chip_SCTPWM_Start(LPC_SCT);
+//#define mcu_pwm_setDutyCicle(duty,Channel)	Chip_SCTPWM_SetDutyCycle(LPC_SCT, Channel, Chip_SCTPWM_PercentageToTicks(LPC_SCT, duty));
 /*==================[typedef]================================================*/
 
 typedef enum
 {
-   MCU_PWM_CHANNEL0 = 0,
+   MCU_PWM_CHANNEL0 = 1,
    MCU_PWM_CHANNEL1,
    MCU_PWM_CHANNEL2,
-   MCU_PWM_CHANNEL3,
-   MCU_PWM_CHANNEL4,
-   MCU_PWM_CHANNEL5,
 
 }mcu_pwm_channel;
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void mcu_pwm_init(void);
+extern void mcu_pwm_init(uint32_t);
 extern void mcu_pwm_config(mcu_pwm_channel, uint32_t);
-extern void mcu_pwm_setDutyCilce(uint32_t);
+extern void mcu_pwm_setDutyCicle(uint32_t,  mcu_pwm_channel);
 
 
 /*==================[cplusplus]==============================================*/
