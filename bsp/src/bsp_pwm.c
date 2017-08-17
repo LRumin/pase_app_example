@@ -1,4 +1,4 @@
-/* Copyright 2017, Gustavo Muro
+/* Copyright 2017, Luciano Rumin
  * All rights reserved.
  *
  * This file is part of CIAA Firmware.
@@ -31,9 +31,7 @@
  *
  */
 
-#ifndef BSP_H
-#define BSP_H
-/** \brief Header para MCU
+/** \brief source para MCU
  **
  ** archivo de inicilización del microcontrolador
  **
@@ -46,37 +44,39 @@
 
 /*==================[inclusions]=============================================*/
 #include "board.h"
-#include "bsp_keyboard.h"
 #include "bsp_pwm.h"
+#include "mcu.h"
+
+/*==================[macros and definitions]=================================*/
 
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-/*==================[macros]=================================================*/
+/*==================[internal data declaration]==============================*/
 
-/*==================[typedef]================================================*/
-typedef enum
-{
-   BSP_LED_ACTION_OFF = 0,
-   BSP_LED_ACTION_ON,
-   BSP_LED_ACTION_TOGGLE,
 
-}bsp_ledAction_enum;
-/*==================[external data declaration]==============================*/
+/*==================[internal functions declaration]=========================*/
 
-/*==================[external functions declaration]=========================*/
-extern void bsp_init(void);
-extern void bsp_ledAction(board_ledId_enum id, bsp_ledAction_enum action);
+/*==================[internal data definition]===============================*/
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
+/*==================[external data definition]===============================*/
+
+/*==================[internal functions definition]==========================*/
+
+/*==================[external functions definition]==========================*/
+extern void bsp_pwmInit(uint32_t Frec){
+	mcu_pwm_init(Frec);
+	mcu_pwm_config(MCU_PWM_CHANNEL0,BOARD_LED_ID_1);
+	mcu_pwm_config(MCU_PWM_CHANNEL1,BOARD_LED_ID_2);
+	mcu_pwm_config(MCU_PWM_CHANNEL2,BOARD_LED_ID_3);
+
 }
-#endif
+
+extern void bsp_SetDutyCicle(mcu_pwm_channel Channel, uint32_t duty){
+	if(duty<101){
+		mcu_pwm_setDutyCicle(duty, Channel);
+	}
+
+}
 /** @} doxygen end group definition */
 /** @} doxygen end group definition */
 /*==================[end of file]============================================*/
-#endif /* #ifndef BSP_H */
-
