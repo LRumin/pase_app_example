@@ -48,13 +48,14 @@
 #include "stdint.h"
 
 
+
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*==================[macros]=================================================*/
-#define mcu_startpwm	Chip_SCTPWM_Start(LPC_SCT);
+
 //#define mcu_pwm_setDutyCicle(duty,Channel)	Chip_SCTPWM_SetDutyCycle(LPC_SCT, Channel, Chip_SCTPWM_PercentageToTicks(LPC_SCT, duty));
 /*==================[typedef]================================================*/
 
@@ -72,7 +73,7 @@ typedef enum
 extern void mcu_pwm_init(uint32_t);
 extern void mcu_pwm_config(mcu_pwm_channel, uint32_t);
 extern void mcu_pwm_setDutyCicle(uint32_t,  mcu_pwm_channel);
-
+extern void mcu_pwm_start();
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

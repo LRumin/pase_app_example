@@ -45,7 +45,7 @@
 /*==================[inclusions]=============================================*/
 #include "board.h"
 #include "bsp_pwm.h"
-#include "mcu.h"
+
 
 /*==================[macros and definitions]=================================*/
 
@@ -67,8 +67,12 @@ extern void bsp_pwmInit(uint32_t Frec){
 	mcu_pwm_init(Frec);
 	mcu_pwm_config(MCU_PWM_CHANNEL0,BOARD_LED_ID_1);
 	mcu_pwm_config(MCU_PWM_CHANNEL1,BOARD_LED_ID_2);
-	mcu_pwm_config(MCU_PWM_CHANNEL2,BOARD_LED_ID_3);
+	mcu_pwm_config(MCU_PWM_CHANNEL2, BOARD_LED_ID_3);
 
+}
+
+extern void bsp_pwmStart(){
+	mcu_pwm_start();
 }
 
 extern void bsp_SetDutyCicle(mcu_pwm_channel Channel, uint32_t duty){

@@ -46,6 +46,9 @@ extern void mcu_pwm_config(mcu_pwm_channel Channel,uint32_t pin){
 
 }
 
+extern void mcu_pwm_start(){
+	Chip_SCTPWM_Start(LPC_SCT);
+}
 
 extern void mcu_pwm_setDutyCicle(uint32_t duty, mcu_pwm_channel Channel){
 	Chip_SCTPWM_SetDutyCycle(LPC_SCT, Channel, Chip_SCTPWM_PercentageToTicks(LPC_SCT, duty));
