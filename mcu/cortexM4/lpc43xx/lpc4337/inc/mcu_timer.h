@@ -31,7 +31,9 @@
  *
  */
 
-/** \brief source para MCU
+#ifndef MCU_PWM_H
+#define MCU_PWM_H
+/** \brief Header para MCU
  **
  ** archivo de inicilización del microcontrolador
  **
@@ -39,61 +41,34 @@
 
 /** \addtogroup PASE_APP_EXAMPLE
  ** @{ */
-/** \addtogroup MCU
+/** \addtogroup MCU PWM
  ** @{ */
-
 /*==================[inclusions]=============================================*/
-#include "mcu.h"
-#include "bsp.h"
+#include "stdbool.h"
+#include "stdint.h"
 
-/*==================[macros and definitions]=================================*/
 
-/*==================[internal data declaration]==============================*/
 
-/*==================[internal functions declaration]=========================*/
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*==================[internal data definition]===============================*/
+/*==================[macros]=================================================*/
 
-/*==================[external data definition]===============================*/
+//#define mcu_pwm_setDutyCicle(duty,Channel)	Chip_SCTPWM_SetDutyCycle(LPC_SCT, Channel, Chip_SCTPWM_PercentageToTicks(LPC_SCT, duty));
+/*==================[typedef]================================================*/
 
-/*==================[internal functions definition]==========================*/
+extern void mcu_timer_init();
+extern uint32_t mcu_timer_read();
+extern void mcu_timer_start();
 
-/*==================[external functions definition]==========================*/
-extern void bsp_init(void)
-{
-   mcu_init();
-
-   board_init();
-
-   bsp_keyboardInit();
-
-   mcu_timer_init();
-
-   mcu_timer_start();
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
 }
-
-extern void bsp_ledAction(board_ledId_enum id, bsp_ledAction_enum action)
-{
-   switch (action)
-   {
-      case BSP_LED_ACTION_OFF:
-         board_ledSet(id, BOARD_LED_STATE_OFF);
-         break;
-
-      case BSP_LED_ACTION_ON:
-         board_ledSet(id, BOARD_LED_STATE_ON);
-         break;
-
-      case BSP_LED_ACTION_TOGGLE:
-         board_ledToggle(id);
-         break;
-   }
-}
-
-extern uint32_t bsp_readTimer(){
-	return mcu_timer_read();
-}
-
+#endif
 /** @} doxygen end group definition */
 /** @} doxygen end group definition */
 /*==================[end of file]============================================*/
+#endif /* #ifndef MCU_PWM_H */
+
