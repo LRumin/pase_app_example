@@ -63,7 +63,7 @@ extern "C" {
 
 /*==================[external functions declaration]=========================*/
 extern void bsp_uart_Init(uint32_t);
-extern void bsp_uart_write(uint8_t *, int32_t );
+extern void bsp_uart_write(uint8_t*, int32_t );
 extern void bsp_uart_IRQ();
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

@@ -48,6 +48,8 @@
 #include "mcu_gpio.h"
 #include "mcu_port.h"
 #include "mcu_pwm.h"
+#include "mcu_uart.h"
+#include "mcu_timer.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

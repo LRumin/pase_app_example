@@ -119,6 +119,8 @@ extern void mcu_gpio_init(void)
    {
       eventsInputs[i].cb = NULL;
    }
+
+
 }
 
 extern void mcu_gpio_setDirection(mcu_gpio_pinId_enum id,
