@@ -91,6 +91,23 @@ OSEK OSEK {
       EVENT = evTask;
       SCHEDULE = NON;
    }
+   
+    TASK RampaTask {
+      PRIORITY = 3;
+      ACTIVATION = 1;
+      STACK = 512;
+      TYPE = EXTENDED;
+      SCHEDULE = NON;
+   }
+
+	ALARM ActivateRampaTask {
+      COUNTER = HardwareCounter;
+      ACTION = ACTIVATETASK {
+         TASK = RampaTask ;
+      }
+   }
+
+   
 
    COUNTER HardwareCounter {
       MAXALLOWEDVALUE = 1000;
@@ -99,6 +116,12 @@ OSEK OSEK {
       TYPE = HARDWARE;
       COUNTER = HWCOUNTER0;
    }
+
+	ISR UART2_IRQHandler {
+	      INTERRUPT = UART2;
+	      CATEGORY = 2;
+	      PRIORITY = 0;
+	};
 
    ISR GPIOINTHandler0 {
       INTERRUPT = GPIO0;

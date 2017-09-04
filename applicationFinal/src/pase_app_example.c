@@ -48,13 +48,15 @@
 #include "pase_app_example.h"
 #include "bsp.h"
 #include "mcu.h"
-
+#include "util.h"
+#include <string.h>
 /*==================[macros and definitions]=================================*/
-#define FIRST_START_DELAY_MS 350
-#define PERIOD_MS 250
+#define FIRST_START_DELAY_MS 10
+#define PERIOD_MS 100
 
 /*==================[internal data declaration]==============================*/
-
+ uint32_t Duty_Cycle;
+ uint8_t Buffer[50];
 /*==================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
@@ -86,7 +88,9 @@ int main(void)
 {
    /* Starts the operating system in the Application Mode 1 */
    /* This example has only one Application Mode */
-   StartOS(AppMode1);
+
+
+	StartOS(AppMode1);
 
    /* StartOs shall never returns, but to avoid compiler warnings or errors
     * 0 is returned */
@@ -123,6 +127,14 @@ void ErrorHook(void)
 TASK(InitTask)
 {
    bsp_init();
+   Duty_Cycle = 0;
+   Estado_Rampa = RAMPA_PARADA;
+   bsp_uart_Init(9600);
+   bsp_pwmInit(1000);
+   bsp_SetDutyCicle(MCU_PWM_CHANNEL0, 0);
+   bsp_SetDutyCicle(MCU_PWM_CHANNEL1, 0);
+   bsp_SetDutyCicle(MCU_PWM_CHANNEL2, 0);
+   bsp_pwmStart();
 
    mcu_gpio_setEventInput(MCU_GPIO_PIN_ID_38,
          MCU_GPIO_EVENT_TYPE_INPUT_FALLING_EDGE,
@@ -132,6 +144,7 @@ TASK(InitTask)
          MCU_GPIO_EVENT_TYPE_INPUT_RISING_EDGE,
          eventInput2_callBack);
 
+   bsp_uart_write("Trabajo Final \n\r", 16);
    TerminateTask();
 }
 
@@ -141,9 +154,45 @@ TASK(InputEvTask1)
    {
       WaitEvent(evTask);
       ClearEvent(evTask);
-      bsp_ledAction(BOARD_LED_ID_1, BSP_LED_ACTION_TOGGLE);
+      Binario_to_BCD(bsp_readTimer(), Buffer, 0, 8);
+      Buffer[8]='\0';
+      switch(Estado_Rampa){
+    	  case RAMPA_SUBIDA:
+    		  Estado_Rampa = RAMPA_PARADA;
+    		  CancelAlarm(ActivateRampaTask);
+				break;
+    	  case RAMPA_BAJADA:
+    		  Estado_Rampa = RAMPA_PARADA;
+    		  CancelAlarm(ActivateRampaTask);
+    			  break;
+    	  case RAMPA_PAUSADA:
+    		  Estado_Rampa = RAMPA_PARADA;
+
+				  break;
+    	  case RAMPA_PARADA:
+    		  SetRelAlarm(ActivateRampaTask, FIRST_START_DELAY_MS, PERIOD_MS);
+    		  Estado_Rampa = RAMPA_SUBIDA;
+   			  break;
+    	  default:
+    		  break;
+      }
+      Color_Led = COLOR_AMARILLO;
+      if(Estado_Rampa == RAMPA_PARADA){
+    	  bsp_SetDutyCicle(MCU_PWM_CHANNEL0, 0);
+    	  bsp_SetDutyCicle(MCU_PWM_CHANNEL1, 0);
+    	  bsp_SetDutyCicle(MCU_PWM_CHANNEL2, 0);
+    	  strcat(Buffer,": Secuencia Finalizada\n\r");
+    	  bsp_uart_write(Buffer, 32);
+      }else{
+    	  strcat(Buffer,": Inicio Secuencia\n\r");
+    	  bsp_uart_write(Buffer, 28);
+    	  bsp_uart_write("Encendido Led Amarillo\n\r", 28);
+      }
+
    }
 }
+
+
 
 TASK(InputEvTask2)
 {
@@ -151,8 +200,115 @@ TASK(InputEvTask2)
    {
       WaitEvent(evTask);
       ClearEvent(evTask);
-      bsp_ledAction(BOARD_LED_ID_2, BSP_LED_ACTION_TOGGLE);
+      Binario_to_BCD(bsp_readTimer(), Buffer, 0, 8);
+      Buffer[8]='\0';
+      switch(Estado_Rampa){
+        	  case RAMPA_SUBIDA:
+				  CancelAlarm(ActivateRampaTask);
+				  Bk_Estado_Rampa = Estado_Rampa;
+				  Estado_Rampa = RAMPA_PAUSADA;
+				  strcat(Buffer,": Secuencia Pausada\n\r");
+				  bsp_uart_write(Buffer, 29);
+				  break;
+        	  case RAMPA_BAJADA:
+        		  CancelAlarm(ActivateRampaTask);
+        		  Bk_Estado_Rampa = Estado_Rampa;
+        		  Estado_Rampa = RAMPA_PAUSADA;
+        		  strcat(Buffer,": Secuencia Pausada\n\r");
+        		  bsp_uart_write(Buffer, 29);
+        		  break;
+        	  case RAMPA_PAUSADA:
+        		  SetRelAlarm(ActivateRampaTask, FIRST_START_DELAY_MS, PERIOD_MS);
+        		  Estado_Rampa=Bk_Estado_Rampa;
+        		  strcat(Buffer,": Secuencia Reanudada\n\r");
+        		  bsp_uart_write(Buffer, 32);
+        		  break;
+        	  default:
+        		  break;
+          }
+
+
    }
+}
+
+
+TASK(RampaTask){
+	switch(Estado_Rampa){
+		case RAMPA_SUBIDA:
+			Duty_Cycle+=5;
+			if(Duty_Cycle == 100){
+				Estado_Rampa = RAMPA_BAJADA;
+				Binario_to_BCD(bsp_readTimer(), Buffer, 0, 8);
+				Buffer[8]='\0';
+				strcat(Buffer,": Intensidad Maxima ");
+				switch(Color_Led){
+					case COLOR_AMARILLO:
+						strcat(Buffer,"Led Amarillo\n\r");
+						bsp_uart_write(Buffer, 42);
+						break;
+					case COLOR_ROJO:
+						strcat(Buffer,"Led Rojo\n\r");
+						bsp_uart_write(Buffer, 38);
+						break;
+					case COLOR_VERDE:
+						strcat(Buffer,"Led Verde\n\r");
+						bsp_uart_write(Buffer, 39);
+						break;
+				}
+
+			}
+			break;
+		case RAMPA_BAJADA:
+			Duty_Cycle-=5;
+			if(Duty_Cycle == 0){
+				Estado_Rampa = RAMPA_SUBIDA;
+			  bsp_SetDutyCicle(MCU_PWM_CHANNEL0, 0);
+	    	  bsp_SetDutyCicle(MCU_PWM_CHANNEL1, 0);
+	    	  bsp_SetDutyCicle(MCU_PWM_CHANNEL2, 0);
+				Duty_Cycle = 5;
+				Binario_to_BCD(bsp_readTimer(), Buffer, 0, 8);
+				Buffer[8]='\0';
+				strcat(Buffer,": Encendido ");
+				switch(Color_Led){
+					case COLOR_AMARILLO:
+						Color_Led = COLOR_ROJO;
+						strcat(Buffer,"Led Rojo\n\r");
+						bsp_uart_write(Buffer, 30);
+						break;
+					case COLOR_ROJO:
+						Color_Led = COLOR_VERDE;
+						strcat(Buffer,"Led Verde\n\r");
+						bsp_uart_write(Buffer, 31);
+						break;
+					case COLOR_VERDE:
+						Color_Led = COLOR_AMARILLO;
+						strcat(Buffer,"Led Amarillo\n\r");
+						bsp_uart_write(Buffer, 34);
+						break;
+				}
+			}
+			break;
+	}
+	switch(Color_Led){
+		case COLOR_AMARILLO:
+			bsp_SetDutyCicle(MCU_PWM_CHANNEL0, Duty_Cycle);
+			break;
+		case COLOR_ROJO:
+			bsp_SetDutyCicle(MCU_PWM_CHANNEL1, Duty_Cycle);
+			break;
+		case COLOR_VERDE:
+			bsp_SetDutyCicle(MCU_PWM_CHANNEL2, Duty_Cycle);
+			break;
+		default:
+			break;
+
+	}
+
+	TerminateTask();
+}
+
+ISR(UART2_IRQHandler){
+	bsp_uart_IRQ();
 }
 
 /** @} doxygen end group definition */
